@@ -15,28 +15,50 @@ def attack(attacker, defender, attack_name, hit_chance, damage):
     else:
         print_slow(f"Miss! {defender} dodges the attack.")
         return 0
-
-def player_turn(player_name, enemy_name):
-    while True:
-        choice = input("Choose your attack (1 for Punch, 2 for Kick, 3 for sword attack): ")
-        if choice in ['1', '2', '3']:
-            break
-        print("Invalid choice. Please enter 1, 2 or 3")
-    
-    if choice == '1':
-        return attack(player_name, enemy_name, "punch", 0.8, 10)
-    elif choice == '2':
-        return attack(player_name, enemy_name, "kick", 0.4, 20)
+def lasso_attempt(attacker, defender):
+    print_slow(f"{attacker} tries to catch {defender} with a lasso...")
+    if random.random() < 0.5:
+        print_slow(f"{defender} is caught in the lasso and is stunned!")
+        return True
     else:
-        return attack(player_name, enemy_name, "Sword attack", 0.5, 15)
+        print_slow(f"{defender} dodges the lasso!")
+        return False
+
+def break_free(name):
+    print_slow(f"{name} attempts to break free from the lasso...")
+    if random.random() < 0.5:
+        print_slow(f"{name} breaks free from the lasso!")
+        return True
+    else:
+        print_slow(f"{name} is still trapped in the lasso!")
+        return False
+
+
+def player_turn(player_name, enemy_name, enemy_stunned):
+    if enemy_stunned:
+        print_slow(f"{enemy_name} is stunned and cannot dodge!")
+        return attack(player_name, enemy_name, "enhanced punch", 0.9, 15)
+    else:
+        while True:
+            choice = input("Choose your action (1 for Punch, 2 for Kick, 3 for Lasso): ")
+            if choice in ['1', '2', '3']:
+                break
+            print("Invalid choice. Please enter 1, 2, or 3.")
+        
+        if choice == '1':
+            return attack(player_name, enemy_name, "punch", 0.8, 10), False
+        elif choice == '2':
+            return attack(player_name, enemy_name, "kick", 0.4, 20), False
+        else:
+            if lasso_attempt(player_name, enemy_name):
+                return 0, True
+            return 0, False
 
 def enemy_turn(enemy_name, player_name):
     if random.random() < 0.4:
         return attack(enemy_name, player_name, "punch", 0.8, 10)
-    elif random.random() <0.8:
-        return attack(enemy_name, player_name, "kick", 0.4, 20)
     else:
-        return attack(enemy_name, player_name, "Sword attack", 0.5, 15)
+        return attack(enemy_name, player_name, "kick", 0.4, 20)
 
 def game():
     print_slow("Welcome to the Gladiator Arena!")
@@ -47,7 +69,6 @@ def game():
     print_slow("Both gladiators start with 100 health.")
     print_slow("Punch: 80% hit chance, 10 damage")
     print_slow("Kick: 40% hit chance, 20 damage")
-    print_slow("Sword attack: 50% hit chance, 15 damage")
     print_slow("\nLet the battle begin!")
     
     player_health = 100
