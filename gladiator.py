@@ -8,20 +8,29 @@ def print_slow(text):
     print(text)
 
 def attack(attacker, defender, attack_name, hit_chance, damage):
-    print_slow(f"{attacker} attempts to {attack_name}...")
+    print_slow(f"{attacker} försöker att {attack_name}...")
     if random.random() < hit_chance:
-        print_slow(f"Hit! {defender} takes {damage} damage.")
+        print_slow(f"Träff! {defender} tar {damage} skada.")
         return damage
     else:
-        print_slow(f"Miss! {defender} dodges the attack.")
+        print_slow(f"Miss! {defender} undviker attacken.")
         return 0
+    
+def lasso_attempt(attacker, defender):
+    print_slow(f"{attacker} attempts to lasso {defender}...")
+    if random.random() < 0.4:
+        print_slow(f"success! {defender} is caught in the lasso!")
+        return True
+    else:
+        print_slow(f"Miss! {defender} evades the lasso!")
+        return False
 
 def player_turn(player_name, enemy_name):
     while True:
-        choice = input("Choose your attack (1 for Punch, 2 for Kick, 3 for sword attack): ")
+        choice = input("Välj din attack (1 för Punch, 2 för Kick, 3 för lasso, 4 för sword attack): ")
         if choice in ['1', '2', '3']:
             break
-        print("Invalid choice. Please enter 1, 2 or 3")
+        print("Ogiltigt svar. Vänligen ange 1, 2, 3 or 4")
     
     if choice == '1':
         return attack(player_name, enemy_name, "punch", 0.8, 10)
@@ -39,16 +48,16 @@ def enemy_turn(enemy_name, player_name):
         return attack(enemy_name, player_name, "Sword attack", 0.5, 15)
 
 def game():
-    print_slow("Welcome to the Gladiator Arena!")
-    player_name = input("Enter your gladiator name: ")
+    print_slow("Välkommen till Gladiator Arenan!")
+    player_name = input("Ange ditt gladiatornamn: ")
     enemy_name = random.choice(["Maximus", "Acastus", "Crixus", "Priscus"])
     
-    print_slow(f"\nWelcome, {player_name}! You will be fighting against {enemy_name}.")
-    print_slow("Both gladiators start with 100 health.")
-    print_slow("Punch: 80% hit chance, 10 damage")
-    print_slow("Kick: 40% hit chance, 20 damage")
-    print_slow("Sword attack: 50% hit chance, 15 damage")
-    print_slow("\nLet the battle begin!")
+    print_slow(f"\nVälkommen, {player_name}! Du kommer att kämpa mot {enemy_name}.")
+    print_slow("Båda gladiatorerna startar med 100 liv.")
+    print_slow("Punch: 80% träffchans, 10 skada")
+    print_slow("Kick: 40% träffchans, 20 skada")
+    print_slow("Sword attack: 50% träffchans, 15 skada")
+    print_slow("\nLåt striden börja!")
     
     player_health = 100
     enemy_health = 100
@@ -61,23 +70,23 @@ def game():
         enemy_health -= damage_dealt
         
         if enemy_health <= 0:
-            print_slow(f"\n{enemy_name} has fallen! {player_name} is victorious!")
+            print_slow(f"\n{enemy_name} har fallit! {player_name} är segrare!")
             break
         
         if damage_dealt == 0:  # Om attack missar, motståndare får gratis attack
-            print_slow(f"{enemy_name} seizes the opportunity!")
+            print_slow(f"{enemy_name} tar tillfället i akt!")
             damage_taken = enemy_turn(enemy_name, player_name)
             player_health -= damage_taken
         else:
-            print_slow(f"\n{enemy_name} prepares to strike back!")
+            print_slow(f"\n{enemy_name} förbereder sig på att slå tillbaka!")
             damage_taken = enemy_turn(enemy_name, player_name)
             player_health -= damage_taken
         
         if player_health <= 0:
-            print_slow(f"\n{player_name} has fallen! {enemy_name} is victorious!")
+            print_slow(f"\n{player_name} har fallit! {enemy_name} är segrare!")
             break
 
-    print_slow("\nThank you for playing!")
+    print_slow("Tack för att du spelar!")
 
 game()
 
