@@ -11,10 +11,10 @@ def attack(attacker, defender, attack_name, hit_chance, damage):
     print_slow(f"{attacker} försöker att {attack_name}...")
     if random.random() < hit_chance:
         print_slow(f"Träff! {defender} tar {damage} skada.")
-        return damage
+        return (damage, attack_name, hit_chance * 100)
     else:
         print_slow(f"Miss! {defender} undviker attacken.")
-        return 0
+        return (0, attack_name, hit_chance *100)
     
 def lasso_attempt(attacker, defender):
     print_slow(f"{attacker} attempts to lasso {defender}...")
@@ -27,10 +27,10 @@ def lasso_attempt(attacker, defender):
 
 def player_turn(player_name, enemy_name):
     while True:
-        choice = input("Välj din attack (1 för Punch, 2 för Kick, 3 för lasso, 4 för sword attack): ")
+        choice = input("Välj din attack (1 för Punch, 2 för Kick, 3 för sword attack): ")
         if choice in ['1', '2', '3']:
             break
-        print("Ogiltigt svar. Vänligen ange 1, 2, 3 or 4")
+        print("Ogiltigt svar. Vänligen ange 1, 2, 3")
     
     if choice == '1':
         return attack(player_name, enemy_name, "punch", 0.8, 10)
@@ -65,9 +65,13 @@ def game():
     while player_health > 0 and enemy_health > 0:
         print_slow(f"\n{player_name}'s health: {player_health}")
         print_slow(f"{enemy_name}'s health: {enemy_health}")
+
+        # Lista för att hålla reda på attackerna (återställs varje runda)
+        attack_history = []
         
-        damage_dealt = player_turn(player_name, enemy_name)
+        damage_dealt, attack_name, hit_chance = player_turn(player_name, enemy_name)
         enemy_health -= damage_dealt
+        attack_history.append(f"{player_name} använde {attack_name}, träffchans: {hit_chance}%, skada: {damage_dealt}")
         
         if enemy_health <= 0:
             print_slow(f"\n{enemy_name} har fallit! {player_name} är segrare!")
@@ -75,16 +79,22 @@ def game():
         
         if damage_dealt == 0:  # Om attack missar, motståndare får gratis attack
             print_slow(f"{enemy_name} tar tillfället i akt!")
-            damage_taken = enemy_turn(enemy_name, player_name)
+            damage_taken, attack_name, hit_chance = enemy_turn(enemy_name, player_name)
             player_health -= damage_taken
+            attack_history.append(f"{enemy_name} använde {attack_name}, Träffchans: {hit_chance}%, Skada: {damage_taken}")
         else:
             print_slow(f"\n{enemy_name} förbereder sig på att slå tillbaka!")
-            damage_taken = enemy_turn(enemy_name, player_name)
+            damage_taken, attack_name, hit_chance = enemy_turn(enemy_name, player_name)
             player_health -= damage_taken
+            attack_history.append(f"{enemy_name} använde {attack_name}, Träffchans: {hit_chance}%, Skada: {damage_taken}")
         
         if player_health <= 0:
             print_slow(f"\n{player_name} har fallit! {enemy_name} är segrare!")
             break
+
+        print_slow("\nAttackhistorik denna runda:")
+        for attack in attack_history:
+            print_slow(attack)
 
     print_slow("Tack för att du spelar!")
 
